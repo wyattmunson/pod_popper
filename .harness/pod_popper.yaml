@@ -1,0 +1,43 @@
+pipeline:
+  name: pod_popper
+  identifier: pod_popper
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: pop
+        identifier: pop
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: <+input>
+            serviceInputs: <+input>
+          environment:
+            environmentRef: dev
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: dev_cluster
+          execution:
+            steps:
+              - step:
+                  type: K8sDelete
+                  name: delete_deployment
+                  identifier: delete_deployment
+                  spec:
+                    deleteResources:
+                      type: ResourceName
+                      spec:
+                        resourceNames:
+                          - <+service.name>-deployment
+                  timeout: 10m
+            rollbackSteps: []
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
