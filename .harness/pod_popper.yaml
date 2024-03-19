@@ -27,12 +27,7 @@ pipeline:
                   name: approval
                   identifier: approval
                   spec:
-                    approvalMessage: |-
-                      Approve to DELETE the following resource:
-
-                      Service: <+service.name>
-                      Env: <+env.name>
-                      Cluster: 
+                    approvalMessage: "Approve to DELETE the following resource:Service: <+service.name>Env: <+env.name>Cluster: <+infra.connector.name>"
                     includePipelineExecutionHistory: true
                     isAutoRejectEnabled: false
                     approvers:
@@ -42,6 +37,7 @@ pipeline:
                       minimumCount: 1
                       disallowPipelineExecutor: false
                     approverInputs: []
+                    callbackId: <+infra.connector.name>
                   timeout: 1d
               - step:
                   type: K8sDelete
@@ -52,7 +48,7 @@ pipeline:
                       type: ResourceName
                       spec:
                         resourceNames:
-                          - <+service.name>-deployment
+                          - deploy/<+service.name>-deployment
                   timeout: 10m
             rollbackSteps: []
         tags: {}
@@ -62,3 +58,4 @@ pipeline:
                 - AllErrors
               action:
                 type: StageRollback
+  description: "Delete a k8s Deployment with a given Harness Service and Environment input. "
