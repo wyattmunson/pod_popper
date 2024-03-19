@@ -23,6 +23,27 @@ pipeline:
           execution:
             steps:
               - step:
+                  type: HarnessApproval
+                  name: approval
+                  identifier: approval
+                  spec:
+                    approvalMessage: |-
+                      Approve to DELETE the following resource:
+
+                      Service: <+service.name>
+                      Env: <+env.name>
+                      Cluster: 
+                    includePipelineExecutionHistory: true
+                    isAutoRejectEnabled: false
+                    approvers:
+                      userGroups:
+                        - account._account_all_users
+                        - account.security_team
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    approverInputs: []
+                  timeout: 1d
+              - step:
                   type: K8sDelete
                   name: delete_deployment
                   identifier: delete_deployment
